@@ -1,7 +1,15 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
-})
+
+  /*
+  |--------------------------------------------------------------------------
+  | Ruta base para GitHub Pages
+  |--------------------------------------------------------------------------
+  | Debe coincidir exactamente con el nombre del repositorio.
+  |--------------------------------------------------------------------------
+  */
+  base: "/vuejs-apispublicas/",
+});

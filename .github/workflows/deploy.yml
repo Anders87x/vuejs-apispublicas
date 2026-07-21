@@ -1,0 +1,64 @@
+name: Publicar Vue en GitHub Pages
+
+on:
+  # Ejecutar el despliegue cada vez que se actualice main.
+  push:
+    branches:
+      - main
+
+  # Permitir ejecutar el despliegue manualmente.
+  workflow_dispatch:
+
+# Permisos necesarios para publicar en GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Evita que se ejecuten varios despliegues al mismo tiempo.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # Descargar el código del repositorio.
+      - name: Descargar repositorio
+        uses: actions/checkout@v6
+
+      # Preparar Node.js.
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+          cache: npm
+
+      # Instalar las dependencias exactas del package-lock.json.
+      - name: Instalar dependencias
+        run: npm ci
+
+      # Generar la carpeta dist.
+      - name: Compilar aplicación
+        run: npm run build
+
+      # Preparar GitHub Pages.
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v6
+
+      # Subir solamente el contenido compilado.
+      - name: Subir carpeta dist
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./dist
+
+      # Publicar el artefacto.
+      - name: Publicar aplicación
+        id: deployment
+        uses: actions/deploy-pages@v5
